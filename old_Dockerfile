@@ -1,0 +1,60 @@
+#NOVIS Wordpress
+FROM amazonlinux
+MAINTAINER tian.marin@gmail.com
+
+#Update and install basic packages
+RUN yum update -y && yum -y install httpd24 php56 php56-mysqlnd php56-json mod24_ssl git
+
+#RUN sed -i 's%#ServerName www.example.com:80%ServerName ${SERVER_NAME}:443%' /etc/httpd/conf/httpd.conf 
+
+#Install Wordpress and WP-CLI for worpdress management
+RUN set -ex; \
+	curl -o wordpress.tar.gz -fSL "https://wordpress.org/latest.tar.gz"; \
+	tar --strip-components=1 -xf wordpress.tar.gz -C /var/www/html/; \
+	rm wordpress.tar.gz; \
+	curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar; \
+	chmod +x wp-cli.phar; \
+	mv wp-cli.phar /usr/local/bin/wp; \
+	wp cli update; \
+	chown -R apache:apache /var/www/html; \
+	chmod 777 /var/www/html/wp-content/uploads; \
+	chmod -R 777 /var/www/html;
+
+
+#Install NPM (nodejs)
+RUN curl --silent --location https://rpm.nodesource.com/setup_6.x | bash - && yum -y install nodejs
+RUN npm install gulp -g && npm install -g bower
+
+#Execute apache server
+CMD ["/usr/sbin/httpd", "-D", "FOREGROUND"]
+
+#ENTRYPOINT apachectl "-DFOREGROUND"
+
+#-----------------------------------------------------------------------------------------
+# USER apache
+
+
+# Copy local wp-config.php
+#COPY wp-config.php /var/www/html/wp-config.php
+
+#Install wp-sync-db plugin
+RUN set -ex; \
+	cd /var/www/html/wp-content/plugins; \
+	git clone https://github.com/wp-sync-db/wp-sync-db.git;
+	#wp plugin activate wp-sync-db;
+
+
+#Install my plugin
+RUN set -ex; \
+	cd /var/www/html/wp-content/plugins; \
+	git clone https://github.com/tianmarin/csi-wp-plugin.git;
+
+
+
+# Install WP CLI
+#wp plugin activate hello --network
+
+WORKDIR /var/www/html/wp-content/plugins/csi-wp-plugin/
+#CMD ["gulp", "watch"]
+
+
