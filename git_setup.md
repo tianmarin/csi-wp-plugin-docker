@@ -9,6 +9,7 @@ git init
 git add *
 git commit -m "first commit"
 git remote add origin REPOSITORY
+git pull --rebase REPOSITORY `# If you already have files like README.md on your repository`
 git push -u origin master
 ```
 Where <kbd>REPOSITORY</kbd> is your repository address (It is irrelevant if you setup your git repository by HTTPS or SSH).
