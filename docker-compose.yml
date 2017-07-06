@@ -15,7 +15,7 @@ services:
   editor:
     image: cmarin/csi-wp-plugin-editor
     links:
-      - wordpress:wordpress
+      - wordpress:wp
     ports:
       - 3000:80
     depends_on:
