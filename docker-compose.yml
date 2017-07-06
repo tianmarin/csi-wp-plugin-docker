@@ -17,21 +17,26 @@ services:
     links:
       - wordpress:wp
     ports:
-      - 3000:80
+      - 80:3000
+      - 81:3001
     depends_on:
       - wordpress
     volumes:
       - ./wp_html/wp-content/plugins:/plugins
+    env_file:
+      - docker-compose.env
     #volumes:
     #  - wp_html:/var/www/html
 
   wordpress_db:
     image: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: Demo_pass
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
+    #environment:
+    #  MYSQL_ROOT_PASSWORD: Demo_pass
+    #  MYSQL_DATABASE: wordpress
+    #  MYSQL_USER: wordpress
+    #  MYSQL_PASSWORD: wordpress
+    env_file:
+      - docker-compose.env
     volumes:
       - ./db_data:/var/lib/mysql
     restart: always
@@ -42,9 +47,11 @@ services:
       - wordpress_db:mysql
     ports:
       - 8080:80
-    environment:
-      MYSQL_USERNAME: root
-      MYSQL_ROOT_PASSWORD: Demo_pass
+    env_file:
+      - docker-compose.env
+    #environment:
+    #  MYSQL_USERNAME: root
+    #  MYSQL_ROOT_PASSWORD: Demo_pass
 
 #volumes:
 #  wp_html:
